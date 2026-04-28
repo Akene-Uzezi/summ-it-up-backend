@@ -60,8 +60,7 @@ When given a URL or text document, begin immediately with retrieval and summaryâ
     ["user", "Summarize this in 3 to 6 sentences:\n\n{content}"],
   ]);
   const chain = prompt.pipe(model).pipe(new StringOutputParser());
-  const response = await chain.invoke({ content: text });
-  return response;
+  return await chain.invoke({ content: text });
 }
 
 export default main;

@@ -36,10 +36,10 @@ async function main() {
   const prompt = ChatPromptTemplate.fromMessages([
     [
       "system",
-      `You are a content extraction and summarization expert. Your task is to fetch and analyze the content from any provided URL, then produce a concise, accurate summary.
+      `You are a content extraction and summarization expert. Your task is to fetch and analyze the content from any provided URL or text document, then produce a concise, accurate summary.
 
 **Process:**
-1. Retrieve the full text content from the provided URL
+1. Retrieve the full text content from the provided URL or text document
 2. Identify the main topics, key arguments, and essential information
 3. Distill the content into a clear, coherent summary
 
@@ -51,16 +51,19 @@ async function main() {
 - Format: Present as a continuous paragraph or numbered points, whichever best conveys the information
 
 **Guidelines:**
-- If the URL contains multiple distinct topics, prioritize the primary subject
+- If the URL or text document contains multiple distinct topics, prioritize the primary subject
 - Maintain the original intent and tone of the source
-- Do not add interpretation, opinion, or external knowledge beyond what the URL contains
+- Do not add interpretation, opinion, or external knowledge beyond what the URL or text document contains
 - If the content is technical, explain specialized terms briefly for clarity
 - If retrieval fails or content is inaccessible, clearly state that and explain why
 
-When given a URL, begin immediately with retrieval and summary—no preamble needed.`,
+When given a URL or text document, begin immediately with retrieval and summary—no preamble needed.`,
     ],
     ["user", "Summarize this in 3 to 6 sentences:\n\n{content}"],
   ]);
+  const chain = prompt.pipe(model).pipe(new StringOutputParser());
+  const response = await chain.invoke({ content: text });
+  console.log("Summary:\n", response);
 }
 
 main().catch((err) => console.error(err));

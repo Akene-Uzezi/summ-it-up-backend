@@ -1,3 +1,4 @@
 .env
 langchain.ipynb
 node_modules
+.kilo

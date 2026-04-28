@@ -1,4 +1,4 @@
-import Redis from "redis";
+import * as Redis from "redis";
 const redisClient = Redis.createClient({
   url: process.env.redisUrl,
 });

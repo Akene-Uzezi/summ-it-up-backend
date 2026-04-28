@@ -7,7 +7,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-async function main(url: string) {
+async function summaryService(url: string) {
   //axios config
   const config = {
     headers: {
@@ -63,4 +63,4 @@ When given a URL or text document, begin immediately with retrieval and summaryâ
   return await chain.invoke({ content: text });
 }
 
-export default main;
+export default summaryService;

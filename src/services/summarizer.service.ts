@@ -3,8 +3,10 @@ import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import * as cheerio from "cheerio";
 import axios from "axios";
-import puppeteer from "puppeteer";
+import puppeteerExtra from "puppeteer-extra";
+import puppeteerStealth from "puppeteer-extra-plugin-stealth";
 
+puppeteerExtra.use(puppeteerStealth());
 const headers = {
   "User-Agent":
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
@@ -35,25 +37,69 @@ async function scrapeUrl(url: string): Promise<string> {
   try {
     const { data: html } = await axios.get(url, { headers, timeout: 8000 });
     const text = extractText(html);
+    console.log(`[axios] text length: ${text.length}`);
     if (text.length > 200) return text;
-  } catch {}
+    console.log("[axios] too little content, falling back to puppeteer");
+  } catch (err) {
+    console.log("[axios] failed:", err instanceof Error ? err.message : err);
+  }
 
-  // Try 2: puppeteer (JS-rendered sites)
+  // Try 2: stealth puppeteer
   try {
-    const browser = await puppeteer.launch({
+    const browser = await puppeteerExtra.launch({
       headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      executablePath: process.env.chromePath || "/usr/bin/chromium",
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--disable-gpu",
+        "--disable-blink-features=AutomationControlled", // removes webdriver flag
+      ],
     });
+
     const page = await browser.newPage();
-    await page.setUserAgent(headers["User-Agent"]);
-    await page.goto(url, { waitUntil: "networkidle2", timeout: 15000 });
+
+    // Match your actual Chromium version instead of hardcoding 120
+    await page.setUserAgent(
+      "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+    );
+
+    // Set realistic viewport
+    await page.setViewport({ width: 1280, height: 800 });
+
+    // Set extra headers to look more human
+    await page.setExtraHTTPHeaders({
+      "Accept-Language": "en-US,en;q=0.9",
+    });
+    await page.setRequestInterception(true);
+    page.on("request", (req) => {
+      const blocked = ["image", "stylesheet", "font", "media"];
+      if (blocked.includes(req.resourceType())) {
+        req.abort();
+      } else {
+        req.continue();
+      }
+    });
+
+    await page.goto(url, { waitUntil: "domcontentloaded", timeout: 30000 });
+
+    // Small delay to let lazy-loaded content render
+    await new Promise((r) => setTimeout(r, 1500));
 
     const html = await page.content();
     await browser.close();
 
     const text = extractText(html);
+    console.log(`[puppeteer] text length: ${text.length}`);
     if (text.length > 200) return text;
-  } catch {}
+    console.log("[puppeteer] too little content");
+  } catch (err) {
+    console.log(
+      "[puppeteer] failed:",
+      err instanceof Error ? err.message : err,
+    );
+  }
 
   throw new Error("Unable to retrieve content from this URL");
 }

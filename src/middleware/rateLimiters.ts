@@ -37,4 +37,15 @@ const userDayLimiter = rateLimit({
   }),
 });
 
-export { userMinuteLimiter, userHourLimiter, userDayLimiter };
+const globalLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 28,
+  keyGenerator: () => "global",
+  skip: (req) => req.path !== "/api/v1/summarize",
+  message: "Server is busy. Please try again later.",
+  store: new RedisStore({
+    sendCommand: (...args) => redisClient.sendCommand(args),
+  }),
+});
+
+export { userMinuteLimiter, userHourLimiter, userDayLimiter, globalLimiter };

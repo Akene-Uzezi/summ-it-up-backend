@@ -18,11 +18,15 @@ Before running this project, ensure you have the following installed:
 2. Create a `.env` file in the root directory:
 
 ```env
-apiKey=your_cerebras_api_key_here
+PORT=3001
 redisUrl=redis://localhost:6379
+apiKey=your_cerebras_api_key_here
+chromePath=/usr/bin/chromium
 ```
 
 3. Get your Cerebras API key from https://inference.cerebras.ai
+4. Ensure Redis is running (see Prerequisites)
+5. Ensure Chromium/Chrome is installed (or update `chromePath` to match your system)
 
 ## Installation
 
@@ -58,23 +62,38 @@ npm start
 
 ## API Usage
 
-Send a POST request to `/summarize` with a URL in the request body:
+### Summarize Content
+
+Send a POST request to `/api/v1/summarize` with either a URL or plain text in the request body:
 
 ```json
 {
-  "url": "https://example.com/article"
+  "input": "https://example.com/article"
 }
 ```
 
-The service will return a 3-6 line summary of the content.
+or
+
+```json
+{
+  "input": "Your plain text content here..."
+}
+```
+
+**Behavior:**
+- If the input is a valid URL (http/https), the service scrapes the webpage content and summarizes it
+- If the input is plain text, the service summarizes it directly
+
+The service returns a 3-6 line summary using Cerebras AI.
 
 ## Rate Limits
+
+Rate limiting is applied per user fingerprint (IP + User-Agent + Accept-Language) and stored in Redis.
 
 - **Per minute**: 3 requests
 - **Per hour**: 85 requests
 - **Per day**: 1200 requests
-
-Rate limiting is tracked per IP address and stored in Redis.
+- **Global**: 28 requests per minute across all users
 
 ## Dependencies
 
@@ -87,6 +106,8 @@ Key dependencies:
 - `express` - Web framework
 - `express-rate-limit` - Rate limiting middleware
 - `redis` - Redis client for rate limit storage
+- `puppeteer-extra` - Enhanced Puppeteer with plugins
+- `puppeteer-extra-plugin-stealth` - Anti-detection plugin for Puppeteer
 
 ## License
 

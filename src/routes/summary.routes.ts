@@ -1,6 +1,22 @@
 import express from "express";
-const router = express.Router();
 import { getUrlSummary } from "../controller/summarize.controller";
+import { createLimiters } from "../middleware/rateLimiters";
 
-router.post("/summarize", getUrlSummary);
-export { router as summaryRoutes };
+type Limiters = ReturnType<typeof createLimiters>;
+
+export function createSummaryRoutes(limiters: Limiters) {
+  const router = express.Router();
+  const { globalLimiter, userMinuteLimiter, userHourLimiter, userDayLimiter } =
+    limiters;
+
+  router.post(
+    "/summarize",
+    globalLimiter,
+    userMinuteLimiter,
+    userHourLimiter,
+    userDayLimiter,
+    getUrlSummary,
+  );
+
+  return router;
+}

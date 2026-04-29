@@ -104,13 +104,28 @@ async function scrapeUrl(url: string): Promise<string> {
   throw new Error("Unable to retrieve content from this URL");
 }
 
-async function summaryService(url: string) {
+function isValidUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === "http:" || parsed.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+async function summaryService(input: string) {
   let text: string;
 
-  try {
-    text = await scrapeUrl(url);
-  } catch (error) {
-    return `Unable to retrieve content from the URL. Please ensure the URL is correct and accessible. Error details: ${error instanceof Error ? error.message : String(error)}`;
+  if (isValidUrl(input)) {
+    try {
+      text = await scrapeUrl(input);
+    } catch (error) {
+      return `Unable to retrieve content from the URL. Please ensure the URL is correct and accessible. Error details: ${error instanceof Error ? error.message : String(error)}`;
+    }
+  } else {
+    // Plain text, go straight to model
+    console.log("[service] input is plain text, skipping scrape");
+    text = input;
   }
 
   const model = new ChatCerebras({
@@ -144,8 +159,7 @@ async function summaryService(url: string) {
 - If the content is technical, explain specialized terms briefly for clarity
 - If retrieval fails or content is inaccessible, clearly state that and explain why
 
-When given a URL or text document, begin immediately with retrieval and summary—no preamble needed.
-`,
+When given a URL or text document, begin immediately with retrieval and summary—no preamble needed.`,
     ],
     ["user", "Summarize this in 3 to 6 sentences:\n\n{content}"],
   ]);

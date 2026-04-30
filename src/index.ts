@@ -11,7 +11,8 @@ import { createLimiters } from "./middleware/rateLimiters";
 const app = express();
 const port = process.env.PORT || 3001;
 
-const allowedOrigins = ["http://localhost:3000", process.env.frontendUrl];
+const originString = process.env.allowedOrigins || "http://localhost:3000";
+const allowedOrigins = originString.split(",").filter(Boolean);
 const options: CorsOptions = {
   origin: (origin, callback) => {
     if (!origin) return callback(null, true);

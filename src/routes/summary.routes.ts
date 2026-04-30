@@ -9,7 +9,9 @@ export function createSummaryRoutes(limiters: Limiters): Router {
   const router = express.Router();
   const { globalLimiter, userMinuteLimiter, userHourLimiter, userDayLimiter } =
     limiters;
-
+  router.get("/health", (req, res) => {
+    res.status(200).json({ status: "ok" });
+  });
   router.post(
     "/summarize",
     globalLimiter,

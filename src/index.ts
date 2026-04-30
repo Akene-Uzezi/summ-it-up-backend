@@ -27,7 +27,21 @@ const options: CorsOptions = {
 
 app.use(express.json());
 app.use(cors(options));
-
+function keepAlive() {
+  setInterval(async () => {
+    const url = process.env.endPoint;
+    if (!url) {
+      console.error("endPoint is not defined in environment variables");
+      return;
+    }
+    try {
+      await fetch(url);
+    } catch (err) {
+      console.error("Error in keepAlive fetch:", err);
+    }
+  }, 600000); // 10 minutes
+}
+keepAlive();
 (async () => {
   await connectRedis();
 

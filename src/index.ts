@@ -22,6 +22,7 @@ const options: CorsOptions = {
       callback(new Error("Not allowed by CORS"));
     }
   },
+  methods: ["GET", "POST", "PUT", "DELETE"],
 };
 
 app.use(express.json());

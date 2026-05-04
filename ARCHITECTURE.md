@@ -390,3 +390,4 @@ Consider adding structured logging (Winston/Pino) for production.
 - Support more AI model options
 - Add request queuing for high load
 - Implement graceful shutdown
+<!-- need to add acopy button and read original -->

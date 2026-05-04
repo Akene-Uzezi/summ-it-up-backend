@@ -29,7 +29,7 @@ function extractText(html: string): string {
     .replace(/\s+/g, " ")
     .replace(/\n+/g, "\n")
     .trim()
-    .substring(0, 4000);
+    .substring(0, 8172); // truncate to fit model input limits
 }
 
 async function scrapeUrl(url: string): Promise<string> {
@@ -125,7 +125,7 @@ async function summaryService(input: string) {
   } else {
     // Plain text, go straight to model
     console.log("[service] input is plain text, skipping scrape");
-    text = input;
+    text = input.substring(0, 8172); // truncate to fit model input limits
   }
 
   const model = new ChatCerebras({

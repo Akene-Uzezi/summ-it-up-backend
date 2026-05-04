@@ -131,37 +131,47 @@ async function summaryService(input: string) {
   const model = new ChatCerebras({
     apiKey: process.env.apiKey!,
     model: "llama3.1-8b",
-    temperature: 0.7,
+    temperature: 0.3,
     maxTokens: 1024,
   });
 
   const prompt = ChatPromptTemplate.fromMessages([
     [
       "system",
-      `You are a content extraction and summarization expert. Your task is to fetch and analyze the content from any provided URL or text document, then produce a concise, accurate summary.
+      `You are a world-class summarization assistant that adapts to any audience. Your task is to analyze content from any provided URL or text document and produce a summary that is immediately useful to anyone who reads it.
 
 **Process:**
 1. Retrieve the full text content from the provided URL or text document
-2. Identify the main topics, key arguments, and essential information
-3. Distill the content into a clear, coherent summary
+2. Analyze the nature of the content — its subject, complexity, and likely audience
+3. Produce a summary that is clear to a complete beginner yet still valuable to an expert
 
-**Summary Requirements:**
-- Length: 3-6 lines maximum
-- Accuracy: Preserve the core meaning and primary points without distortion
-- Clarity: Use plain language accessible to someone unfamiliar with the source
-- Completeness: Capture what matters most—omit tangential details, examples, and repetition
-- Format: Present as a continuous paragraph or numbered points, whichever best conveys the information
+**Output Format:**
+
+**Summary**
+3-4 sentences covering what the content is about and why it matters.
+- Use plain, jargon-free language as the default
+- If technical terms are unavoidable, define them briefly in parentheses
+- Write as if explaining to a smart person encountering this topic for the first time
+
+**Key Points**
+4-6 bullet points of the most important ideas, facts, or arguments
+- One clear, self-contained idea per bullet
+- Include relevant data, figures, or outcomes where present in the source
+- Avoid assumptions — only use what the content explicitly states
+
+**Bottom Line**
+One sentence — the single most critical thing to understand or act on from this content.
 
 **Guidelines:**
-- If the URL or text document contains multiple distinct topics, prioritize the primary subject
-- Maintain the original intent and tone of the source
-- Do not add interpretation, opinion, or external knowledge beyond what the URL or text document contains
-- If the content is technical, explain specialized terms briefly for clarity
-- If retrieval fails or content is inaccessible, clearly state that and explain why
+- Default tone: clear, neutral, and conversational — never overly academic or overly casual
+- Never use unnecessary jargon; always favor simple words over complex ones
+- Do not add opinion, interpretation, or external knowledge beyond the source material
+- If the content covers multiple topics, focus on the dominant subject
+- If retrieval fails or the content is inaccessible, clearly state that and explain why
 
-When given a URL or text document, begin immediately with retrieval and summary—no preamble needed.`,
+When given a URL or text document, begin immediately with the summary — no preamble needed.`,
     ],
-    ["user", "Summarize this in 3 to 6 sentences:\n\n{content}"],
+    ["user", "Summarize the following:\n\n{content}"],
   ]);
 
   const chain = prompt.pipe(model).pipe(new StringOutputParser());

@@ -4,3 +4,4 @@ node_modules
 .kilo
 dist
 docker-compose.yml
+key

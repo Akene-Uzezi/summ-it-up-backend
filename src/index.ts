@@ -9,7 +9,7 @@ import serverError from "./middleware/serverError";
 import { createLimiters } from "./middleware/rateLimiters";
 
 const app = express();
-const port = process.env.PORT || 3001;
+const port: number = Number(process.env.PORT) || 3001;
 
 const originString = process.env.allowedOrigins || "http://localhost:3000";
 const allowedOrigins = originString.split(",").filter(Boolean);
@@ -25,7 +25,7 @@ const options: CorsOptions = {
   methods: ["GET", "POST", "PUT", "DELETE"],
 };
 
-app.set('trust proxy', 1)
+app.set("trust proxy", 1);
 app.use(express.json());
 app.use(cors(options));
 function keepAlive() {
@@ -51,7 +51,7 @@ keepAlive();
   app.use(notFound);
   app.use(serverError);
 
-  app.listen(port, () => {
+  app.listen(port, "0.0.0.0", () => {
     console.log(`Server is running on port ${port}`);
   });
 })();

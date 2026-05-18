@@ -9,7 +9,8 @@
   "scripts": {
     "start": "node dist/index.js",
     "dev": "nodemon",
-    "build": "tsc"
+    "build": "tsc",
+    "commit": "sh ./src/commit.sh"
   },
   "keywords": [],
   "author": "",

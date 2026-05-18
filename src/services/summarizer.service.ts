@@ -46,15 +46,38 @@ async function scrapeUrl(url: string): Promise<string> {
 
   // Try 2: stealth puppeteer
   try {
+    let options = {};
+
+    // Check if running on Vercel/Production vs Local
+    if (process.env.VERCEL) {
+      // Vercel Serverless environment config
+      const chromium = require("@sparticuz/chromium");
+      options = {
+        args: chromium.args,
+        defaultViewport: chromium.defaultViewport,
+        executablePath: await chromium.executablePath(),
+        headless: chromium.headless,
+      };
+    } else {
+      // Your local development config
+      options = {
+        headless: true,
+        executablePath: process.env.chromePath || "/usr/bin/chromium", // Or your local Chrome path
+        args: [
+          "--no-sandbox",
+          "--disable-setuid-sandbox",
+          "--disable-dev-shm-usage",
+          "--disable-gpu",
+        ],
+      };
+    }
+
+    // Force automation flags off via puppeteer-extra
     const browser = await puppeteerExtra.launch({
-      headless: true,
-      executablePath: process.env.chromePath || "/usr/bin/chromium",
+      ...options,
       args: [
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage",
-        "--disable-gpu",
-        "--disable-blink-features=AutomationControlled", // removes webdriver flag
+        ...((options as any).args || []),
+        "--disable-blink-features=AutomationControlled",
       ],
     });
 
@@ -72,6 +95,7 @@ async function scrapeUrl(url: string): Promise<string> {
     await page.setExtraHTTPHeaders({
       "Accept-Language": "en-US,en;q=0.9",
     });
+
     await page.setRequestInterception(true);
     page.on("request", (req) => {
       const blocked = ["image", "stylesheet", "font", "media"];

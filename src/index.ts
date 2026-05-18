@@ -42,7 +42,7 @@ function keepAlive() {
     }
   }, 600000); // 10 minutes
 }
-keepAlive();
+// keepAlive();
 (async () => {
   await connectRedis();
 

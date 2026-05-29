@@ -1,5 +1,5 @@
-import { ChatCerebras } from "@langchain/cerebras";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
+import { ChatOpenRouter } from "@langchain/openrouter";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import * as cheerio from "cheerio";
 import axios from "axios";
@@ -152,11 +152,11 @@ async function summaryService(input: string) {
     text = input.substring(0, 8172); // truncate to fit model input limits
   }
 
-  const model = new ChatCerebras({
-    apiKey: process.env.apiKey!,
-    model: "llama3.1-8b",
+  const model = new ChatOpenRouter({
+    model: "meta-llama/llama-3.3-70b-instruct:free",
+    apiKey: process.env.openrouterApiKey,
     temperature: 0.3,
-    maxTokens: 1024,
+    maxTokens: 1100,
   });
 
   const prompt = ChatPromptTemplate.fromMessages([

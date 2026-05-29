@@ -153,7 +153,7 @@ async function summaryService(input: string) {
   }
 
   const model = new ChatOpenRouter({
-    model: "meta-llama/llama-3.3-70b-instruct:free",
+    model: process.env.modelName,
     apiKey: process.env.openrouterApiKey,
     temperature: 0.3,
     maxTokens: 1100,

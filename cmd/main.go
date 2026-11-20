@@ -8,7 +8,7 @@ import (
 
 func main() {
 	app := &application{
-		port:    env.GetEnvInt("PORT", 3000),
+		port:    env.GetEnvInt("PORT", 8080),
 		origins: env.GetEnvString("allowedOrigins", "*"),
 	}
 	app.serve()

@@ -26,17 +26,13 @@
     "typescript": "^6.0.3"
   },
   "dependencies": {
-    "@cerebras/cerebras_cloud_sdk": "^1.64.1",
-    "@langchain/cerebras": "^1.0.4",
-    "@langchain/core": "^1.1.42",
-    "@langchain/openrouter": "^0.3.0",
-    "@sparticuz/chromium": "^148.0.0",
     "axios": "^1.15.2",
     "cheerio": "^1.2.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "express-rate-limit": "^8.4.1",
+    "openai": "^7.62.0",
     "puppeteer": "^24.42.0",
     "puppeteer-core": "^25.0.4",
     "puppeteer-extra": "^3.3.6",

@@ -8,8 +8,10 @@ import (
 
 func main() {
 	app := &application{
-		port:    env.GetEnvInt("PORT", 8080),
-		origins: env.GetEnvString("allowedOrigins", "*"),
+		port:      env.GetEnvInt("PORT", 8080),
+		origins:   env.GetEnvString("allowedOrigins", "*"),
+		apiKey:    env.GetEnvString("apiKey", "apikey"),
+		modelName: env.GetEnvString("modelName", "modelName"),
 	}
 	app.serve()
 }

@@ -23,5 +23,11 @@ func (a *application) routes() http.Handler {
 		AllowMethods: []string{"POST"},
 	}))
 
+	v1 := g.Group("/api/v1")
+
+	{
+		v1.POST("/summarize", a.summarize)
+	}
+
 	return g
 }
